@@ -273,7 +273,6 @@ public:
     std::vector<detail::CameraParams> cameras() const { return cameras_; }
     CV_WRAP double workScale() const { return work_scale_; }
 
-private:
     //Stitcher() {}
 
     Status matchImages();
