@@ -88,6 +88,7 @@ public:
             throw SkipTestException("Unstable MSMF test");
         writeVideo();
         VideoCapture cap;
+        
         ASSERT_NO_THROW(cap.open(video_file, apiPref));
         if (!cap.isOpened())
         {
@@ -172,7 +173,7 @@ public:
     {
         ext = get<0>(GetParam());
         apiPref = get<1>(GetParam());
-        video_file = BunnyParameters::getFilename(String(".") + ext);
+        video_file = "/Users/tonylambropoulos/projects/BallTracking/data/clip.mp4";//video_file = BunnyParameters::getFilename(String(".") + ext);
     }
     void doFrameCountTest()
     {
@@ -202,6 +203,8 @@ public:
             std::cout << "FPS is not available. SKIP check." << std::endl;
 
         int count_prop = 0;
+        EXPECT_NO_THROW(count_prop = (int)cap.get(CAP_PROP_FRAME_COUNT));
+        EXPECT_NO_THROW(count_prop = (int)cap.get(CAP_PROP_FRAME_COUNT));
         EXPECT_NO_THROW(count_prop = (int)cap.get(CAP_PROP_FRAME_COUNT));
         // mpg file reports 5.08 sec * 24 fps => property returns 122 frames
         // but actual number of frames returned is 125
@@ -320,21 +323,21 @@ public:
 
 static const VideoCaptureAPIs backend_params[] = {
 #ifdef HAVE_AVFOUNDATION
-   CAP_AVFOUNDATION,
+   //CAP_AVFOUNDATION,
 #endif
 
 #ifdef _WIN32
-    CAP_MSMF,
+    //CAP_MSMF,
 #endif
 
-    CAP_GSTREAMER,
+    //CAP_GSTREAMER,
     CAP_FFMPEG,
 
 #ifdef HAVE_XINE
-    CAP_XINE,
+    //CAP_XINE,
 #endif
 
-    CAP_OPENCV_MJPEG
+    //CAP_OPENCV_MJPEG
     // CAP_INTEL_MFX
 };
 
@@ -456,8 +459,8 @@ public:
     }
     void TearDown()
     {
-        if (ext.size() == 3)
-            (void)remove(video_file.c_str());
+        //if (ext.size() == 3)
+            //(void)remove(video_file.c_str());
     }
 };
 

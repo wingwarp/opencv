@@ -88,7 +88,7 @@ extern "C" {
 
 #include <libavcodec/avcodec.h>
 #include <libswscale/swscale.h>
-
+#include "extra_headers/isom.h"
 #ifdef __cplusplus
 }
 #endif
@@ -1485,16 +1485,29 @@ double CvCapture_FFMPEG::get_fps() const
 int64_t CvCapture_FFMPEG::get_total_frames() const
 {
     int64_t nbf = ic->streams[video_stream]->nb_frames;
+    
+    if (nbf == 0) {
+        AVStream *st = ic->streams[video_stream];
+        nbf = st->nb_index_entries;
+        if (nbf == 0) {
+            nbf = (int64_t)floor(0.5 + get_fps() * (get_duration_sec() - (double)ic->streams[video_stream]->start_time * r2d(ic->streams[video_stream]->time_base)));
+            std::cout << "frame num: " << nbf << std::endl;
+        }
 
-    if (nbf == 0)
-    {
-        nbf = (int64_t)floor(get_duration_sec() * get_fps() + 0.5);
     }
     return nbf;
 }
 
 int64_t CvCapture_FFMPEG::dts_to_frame_number(int64_t dts)
 {
+    AVStream *st = ic->streams[video_stream];
+    int num_entries = st->nb_index_entries;
+    for (int i = 0; i < num_entries; i++) {
+        int64_t ts = st->index_entries[i].timestamp;
+        if (ts == dts ) {
+            return (int64_t )i;
+        }
+    }
     double sec = dts_to_sec(dts);
     return (int64_t)(get_fps() * sec + 0.5);
 }
